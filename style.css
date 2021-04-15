@@ -1,0 +1,49 @@
+:root {
+  --main-radius: 3px;
+  --main-padding: 3px;
+}
+
+.container {
+  display: grid;
+  height: 100vh;
+  grid-template-columns: 1fr 1fr 0.6fr 0.6fr;
+  grid-template-rows: 0.2fr 1fr 1fr 0.2fr;
+  grid-template-areas: "nav nav nav nav" "main main form form" "main main form form" "footer footer footer footer";
+  grid-gap: 0.2rem;
+}
+
+nav {
+  background: rgb(73, 73, 179);
+  grid-area: nav;
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+}
+
+main {
+  background: rgb(126, 76, 173);
+  grid-area: main;
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+}
+
+form {
+  background: burlywood;
+  grid-area: form;
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+}
+
+footer {
+  background: rgb(147, 218, 76);
+  grid-area: footer;
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+}
+
+@media only screen and (max-width: 550px) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.1fr 0.5fr 0.5fr 0.1fr;
+    grid-template-areas: "nav" "main" "form" "footer";
+  }
+}
