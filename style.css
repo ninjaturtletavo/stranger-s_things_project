@@ -9,35 +9,139 @@
   grid-template-columns: 1fr 1fr 0.6fr 0.6fr;
   grid-template-rows: 0.2fr 1fr 1fr 0.2fr;
   grid-template-areas: "nav nav nav nav" "main main form form" "main main form form" "footer footer footer footer";
-  grid-gap: 0.2rem;
+  /* grid-gap: 0.2rem; */
+  border-style: solid;
+  border-color: #0c120c;
 }
 
 nav {
-  background: rgb(73, 73, 179);
+  background: #c20114;
   grid-area: nav;
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
 }
 
-main {
-  background: rgb(126, 76, 173);
-  grid-area: main;
-  border-radius: var(--main-radius);
-  padding-top: var(--main-padding);
+.title-h1 {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
 }
 
-form {
-  background: burlywood;
+main {
+  /* display: flex; */
+  background: #0c120c;
+  text-align: center;
+  grid-area: main;
+
+  border-radius: var(--main-radius);
+  padding-top: var(--main-padding);
+  overflow: scroll;
+}
+
+.posts-h3 {
+  color: #adafaf;
+}
+
+.card-body {
+  color: #0c120c;
+  background-color: #6d7275;
+  border-style: solid;
+  border-radius: 3%;
+}
+
+.card-text1 {
+  color: #0c120c;
+
+  background-color: #adafaf;
+}
+
+#new-post {
+  background: #ecebf3;
   grid-area: form;
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
 }
 
-footer {
-  background: rgb(147, 218, 76);
+.mb-3 {
+  margin-left: 15px;
+  margin-top: 2px;
+}
+
+#blog-title {
+  margin-left: 9.4px;
+}
+
+#blog-price {
+  margin-left: 41px;
+}
+
+#blog-author {
+  margin-left: 28.8px;
+}
+
+#blog-location {
+  margin-left: 17px;
+}
+
+#footer {
+  background: #c20114;
   grid-area: footer;
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
+}
+
+#myBtn {
+  background-color: #ecebf3;
+  color: #000000;
+  padding: 5px;
+  float: right;
+}
+
+#myBtn:hover {
+  background-color: #c7d6d5;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+}
+
+.modal-header,
+.modal-footer {
+  margin: auto;
+  background-color: #0c120c;
+  text-align: center;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #c20114;
+  color: #ecebf3;
+  margin: 15% auto; /*15% from the top and centered*/
+  width: 50%; /* Could be more or less, depending on screen size */
+  justify-content: center;
+}
+
+/* The Close Button */
+.close {
+  color: #ecebf3;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #c20114;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 @media only screen and (max-width: 550px) {
@@ -47,3 +151,11 @@ footer {
     grid-template-areas: "nav" "main" "form" "footer";
   }
 }
+
+/*
+0C120C black
+C20114 red
+6D7275 gray
+C7D6D5 light gray
+ECEBF3 lighter gray
+*/
