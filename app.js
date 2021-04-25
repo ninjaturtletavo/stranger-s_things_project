@@ -3,7 +3,7 @@
 const BASE_URL =
   "https://strangers-things.herokuapp.com/api/2102-CPU-RM-WEB-PT";
 
-// fetches posts from database and returns renderPosts
+// Fetches posts from database and displays
 const fetchPosts = async () => {
   try {
     const response = await fetch(`${BASE_URL}/posts`);
@@ -11,11 +11,12 @@ const fetchPosts = async () => {
     const { posts } = data;
 
     return posts;
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
   }
 };
 
+// Fetches logged in users post information
 const fetchMe = async () => {
   const token = JSON.parse(localStorage.getItem("token"));
 
@@ -27,21 +28,22 @@ const fetchMe = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    const data = await response.json();
+    const result = await response.json();
 
-    return data.data;
-  } catch (error) {
-    console.error(error);
+    return result.data; // If I remove .data, my edit and delete buttons disappear!
+  } catch (e) {
+    console.error(e);
   }
 };
 
+// Renders posts and user data
 const fetchAndRender = async () => {
   const posts = await fetchPosts();
   const { data } = posts;
   const user = await fetchMe();
   console.log(posts);
   console.log(data);
-  return renderPosts(posts.data, user);
+  renderPosts(posts.data, user);
 };
 
 // createPostHTML appends on #posts on html page
@@ -52,11 +54,12 @@ const renderPosts = (posts, me) => {
   });
 };
 
-const postBlogEntry = async (requestBody) => {
+//Creates a post
+const createPost = async (requestBody) => {
   const token = JSON.parse(localStorage.getItem("token"));
 
   try {
-    const request = await fetch(`${BASE_URL}/posts`, {
+    const response = await fetch(`${BASE_URL}/posts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +67,7 @@ const postBlogEntry = async (requestBody) => {
       },
       body: JSON.stringify(requestBody),
     });
-    const result = await request.json();
+    const result = await response.json();
 
     return result;
   } catch (e) {
@@ -72,11 +75,12 @@ const postBlogEntry = async (requestBody) => {
   }
 };
 
-const editBlogEntry = async (requestBody, postId) => {
+// Edit a post belonging to user logged in
+const editPost = async (requestBody, postId) => {
   const token = JSON.parse(localStorage.getItem("token"));
 
   try {
-    const request = await fetch(`${BASE_URL}/posts/${postId}`, {
+    const response = await fetch(`${BASE_URL}/posts/${postId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -84,40 +88,82 @@ const editBlogEntry = async (requestBody, postId) => {
       },
       body: JSON.stringify(requestBody),
     });
+    const result = await response.json();
+
+    return result;
   } catch (e) {
     console.error(e);
   }
 };
 
-const deleteBlogEntry = async (postId) => {
+// Delete post belonging to user logged in
+const deletePost = async (postId) => {
   const token = JSON.parse(localStorage.getItem("token"));
   try {
-    const request = await fetch(`${BASE_URL}/posts/${postId}`, {
+    const response = await fetch(`${BASE_URL}/posts/${postId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
+    const result = await response.json();
   } catch (e) {
     console.error(e);
   }
 };
 
-// creates a card with keys from post
+//
+const messageSend = async (messages, postId) => {
+  const {
+    post: { _id },
+  } = postId;
+
+  const token = JSON.parse(localStorage.getItem("token"));
+
+  try {
+    const response = await fetch(`${BASE_URL}/posts/${_id}/messages`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(messages),
+    });
+    const result = await response.json();
+    return result;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// createMessageHTML appends on .message-card on html page
+const renderMessages = ({ messages } = post) => {
+  $(".message-card").empty();
+
+  if (messages.length === 0)
+    return $(".message-card").append("<h5>No messages to Show</h5>");
+
+  messages.forEach((message) => {
+    const messageElement = createMessageHTML(message);
+
+    $(".message-card").append(messageElement);
+  });
+};
+
+// Creates a card with keys from post
 const createPostHTML = (post, me) => {
   const { title, description, price, author, location } = post;
-  const author_id = author._id;
 
   return $(`<div class="card">
   <div class="card-body">
     ${title ? `<h3 class="card-title">${title}</h3>` : ""}
-    ${description ? `<p class="card-text1">${description}</p>` : ""}
+    ${description ? `<p>${description}</p>` : ""}
     ${price ? `<p>${price}</p>` : ""}
-    ${author ? `<p class="card-text1"/>${author}</p>` : ""}
+    ${author.username ? `<p>${author.username}</p>` : ""}
     ${location ? `<p>${location}</p>` : ""}
     ${
-      me._id === author_id
+      me._id === author._id
         ? `
         <button class="edit-container">
         <svg class="edit-icon" viewBox="0 0 20 20">
@@ -135,7 +181,22 @@ const createPostHTML = (post, me) => {
 </div>`).data("post", post);
 };
 
-// registers user with username and password
+// Creates a card with keys from message
+const createMessageHTML = (message) => {
+  const {
+    content,
+    fromUser: { username },
+  } = message;
+
+  return $(`<div class="message-card">
+  <div class="message-body">
+    ${username ? `<h3 class="message-title">${username}</h3>` : ""}
+    ${content ? `<p>${content}</p>` : ""}
+  </div>
+</div>`);
+};
+
+// Registers user with username and password
 const registerUser = async (usernameValue, passwordValue) => {
   const url = `${BASE_URL}/users/register`;
 
@@ -162,7 +223,7 @@ const registerUser = async (usernameValue, passwordValue) => {
   }
 };
 
-// logs in users that have accounts with username and password
+// Logs in user with a an account
 const loginUser = async (usernameValue, passwordValue) => {
   const url = `${BASE_URL}/users/login`;
 
@@ -184,13 +245,16 @@ const loginUser = async (usernameValue, passwordValue) => {
     } = await response.json();
     console.log(token);
     localStorage.setItem("token", JSON.stringify(token));
+    fetchMe();
     hideLogin();
+    hideRegistration();
+    showLogout();
   } catch (error) {
     console.error(error);
   }
 };
 
-// hides the registration form when user registers
+// Hides the registration form when user registers
 const hideRegistration = () => {
   const token = localStorage.getItem("token");
 
@@ -201,7 +265,7 @@ const hideRegistration = () => {
   }
 };
 
-// hides login when user logs in
+// Hides login when user logs in
 const hideLogin = () => {
   const token = localStorage.getItem("token");
 
@@ -209,6 +273,24 @@ const hideLogin = () => {
     $(".login").css("display", "none");
   } else {
     console.log("Nothing to hide!");
+  }
+};
+
+// Logs user out
+const userLogout = () => {
+  localStorage.removeItem("token");
+
+  $("#login").show(); // will show button
+  $("#logout").css("display", "none");
+};
+
+// If a user is logged in, shows logout button
+const showLogout = () => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    $("#logout").show(); // will show button
+    $("#login").css("display", "none");
   }
 };
 
@@ -224,8 +306,13 @@ $(".login form").on("submit", (event) => {
   event.preventDefault();
   const username = $("#loginUsername").val();
   const password = $("#loginPassword").val();
-  console.log(username, password);
+  console.log(username, password, "I am logged in!");
   loginUser(username, password);
+});
+
+$("#logout").on("click", () => {
+  console.log("Logged out.");
+  userLogout();
 });
 
 // submit function on form
@@ -250,8 +337,7 @@ $(".form-submit").on("submit", async (e) => {
 
   try {
     console.log(requestBody);
-    await postBlogEntry(requestBody);
-    ///// fetchandrender goies here
+    await createPost(requestBody);
     fetchAndRender();
 
     // clear form after submit
@@ -261,15 +347,63 @@ $(".form-submit").on("submit", async (e) => {
   }
 });
 
-$("#posts").on("click", ".edit-icon", async (e) => {
-  console.log("YESSSSS edit");
+$(".message-form").on("submit", async (event) => {
+  event.preventDefault();
+
+  const cardId = $(".message-form").data("card");
+  console.log(cardId);
+
+  const messageData = {
+    message: {
+      content: $(".message-body").val(),
+    },
+  };
+
+  if ($(".message-body").val() === "") return;
+
+  try {
+    const result = await sendMessage(messageData, cardId);
+    console.log(result);
+    $("#message-body").val(null);
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
+});
+
+$("#posts").on("click", ".edit-icon", async (event) => {
+  event.preventDefault();
+  console.log("Let's Edit!!!!!");
+
+  const listingElement = $(event.target).closest(".card");
+  let titleContent = $("#blog-title").val();
+  console.log(titleContent);
+
+  // const { card } = $("#posts").data();
+
+  // const postData = {
+  //   post: {
+  //     title: $("#blog-title").val(),
+  //     description: $("#blog-description").val(),
+  //     price: $("#blog-price").val(),
+  //   },
+  // };
+
+  // try {
+  //   const result = await editPost(postData, card._id);
+  //   console.log("Result is: ", result);
+  //   fetchAndRender();
+  //   $("#posts").data({ card: null });
+  //   $("#posts").trigger("reset");
+  // } catch (e) {
+  //   console.error(e);
+  // }
 });
 
 $("#posts").on("click", ".delete-icon", async (event) => {
   event.preventDefault();
-  console.log("YESSSSS delete");
+  console.log("I am now deleting the post!");
 
-  event.preventDefault();
   const listingElement = $(event.target).closest(".card");
   console.log(listingElement);
   const data = listingElement.data();
@@ -280,7 +414,7 @@ $("#posts").on("click", ".delete-icon", async (event) => {
   console.log(_id);
   console.log("clicked");
 
-  deleteBlogEntry(_id);
+  deletePost(_id);
   fetchAndRender();
 });
 
@@ -289,7 +423,7 @@ $("#posts").on("click", ".delete-icon", async (event) => {
 const modal = document.getElementById("myModal");
 
 // Get the button that opens the modal
-const btn = document.getElementById("myBtn");
+const btn = document.getElementById("login");
 
 // Get the <span> element that closes the modal
 const span = document.getElementsByClassName("close")[0];
@@ -310,6 +444,28 @@ window.onclick = function (event) {
     modal.style.display = "none";
   }
 };
+
+// Get the modal for modalMessages------------------------------------------------------------
+const modalMessages = document.getElementById("modalMessages");
+// Get the button that opens the modal
+const messageBtn = document.getElementById("openMessages");
+//Get the span element that closes the modal
+const closeMessageBtn = document.getElementsByClassName("close-messages")[0];
+
+messageBtn.onclick = () => {
+  modalMessages.style.display = "block";
+};
+
+closeMessageBtn.onclick = function () {
+  modalMessages.style.display = "none";
+};
+
+window.onclick = function (event) {
+  if (event.target == modalMessages) {
+    modalMessages.style.display = "none";
+  }
+};
+//------------------------------------------------------------------------------------------------
 
 (async () => {
   const posts = await fetchPosts();
