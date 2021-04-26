@@ -13,10 +13,16 @@
 }
 
 nav {
-  background: #467599;
+  background: #000000;
+  color: #ffffff;
+  font-size: 1em;
   grid-area: nav;
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
+  box-shadow: 1px 1px 2px 2px rgb(71, 71, 71);
+}
+#search {
+  float: left;
 }
 
 .title-h1 {
@@ -28,40 +34,37 @@ nav {
 main {
   display: flex;
   flex-wrap: wrap;
-  background: #9ed8db;
+  background: #fdffff;
   text-align: center;
   grid-area: main;
-
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
   overflow: scroll;
 }
 
 .posts-h3 {
-  color: #d6d5d5;
+  color: #ffffff;
 }
 
 .card-body {
   color: #0c120c;
-  background-color: #e9fff9;
-  border: #d64045 solid 3px;
+  background-color: #e9e9e9;
+  border: #1f1d1d solid 5px;
   border-radius: 5%;
   margin: 2px;
+  padding: 10px;
   width: 300px;
   height: 300px;
-}
-
-.card-text1 {
-  color: #0c120c;
-  background-color: #e9fff9;
+  box-shadow: 1px 1px 2px 2px rgb(71, 71, 71);
 }
 
 #new-post {
   visibility: hidden;
-  background: #d1d0d6;
+  background: #03010f;
   grid-area: form;
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
+  box-shadow: 1px 1px 2px 2px rgb(71, 71, 71);
 }
 
 .form-submit {
@@ -71,9 +74,9 @@ main {
   padding: 5px;
   margin: auto;
   border-radius: 5px;
-  border: solid 1px #d64045;
+  border: solid 1px #ffffff;
   box-shadow: 1px 2px 5px rgba(0, 0, 010, 0.31);
-  background: #d64045;
+  background: #ffffff;
 }
 
 .edit-form-submit {
@@ -107,23 +110,30 @@ main {
 }
 
 #footer {
-  background: #467599;
+  background: #000000;
   grid-area: footer;
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
 }
 
 #login {
-  background-color: #ecebf3;
+  background-color: #ffffff;
   color: #000000;
   padding: 5px;
   float: right;
 }
 
+#home-btn {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 5px;
+  float: left;
+}
+
 #openMessages,
 #viewMessages {
   visibility: hidden;
-  background-color: #ecebf3;
+  background-color: #ffffff;
   color: #000000;
   padding: 5px;
   float: right;
@@ -158,13 +168,13 @@ main {
 .modal-header,
 .modal-footer {
   margin: auto;
-  background-color: #467599;
+  background-color: #000000;
   text-align: center;
 }
 
 /* Modal Content/Box */
 .modal-content {
-  background-color: #e9fff9;
+  background-color: #e2e2e2;
   color: #ecebf3;
   margin: 15% auto; /*15% from the top and centered*/
   width: 50%; /* Could be more or less, depending on screen size */
@@ -175,7 +185,7 @@ main {
 .close,
 .close-message,
 .close-view-message {
-  color: #ecebf3;
+  color: #ffffff;
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -186,7 +196,7 @@ main {
 .close-view-message:hover .close:focus,
 .close-message:focus,
 .close-view-message:focus {
-  color: #e9fff9;
+  color: #000000;
   text-decoration: none;
   cursor: pointer;
 }
@@ -204,8 +214,8 @@ main {
 }
 
 .modal-messages-content {
-  background-color: #e9fff9;
-  color: #ecebf3;
+  background-color: #fcfcfc;
+  color: #000000;
   margin: 15% auto; /*15% from the top and centered*/
   width: 50%; /* Could be more or less, depending on screen size */
   justify-content: center;

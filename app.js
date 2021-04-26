@@ -299,6 +299,24 @@ const showLogout = () => {
   }
 };
 
+$("#home-btn").on("click", () => {
+  location.reload();
+});
+
+$("#search").on("submit", async (event) => {
+  event.preventDefault();
+
+  const searchString = $("#search input").val().toUpperCase();
+  console.log(searchString);
+  const posts = await fetchPosts();
+  const me = await fetchMe();
+
+  const searchPostsArray = posts.filter((post) =>
+    post.title.toUpperCase().includes(searchString)
+  );
+  renderPosts(searchPostsArray, me);
+});
+
 $(".register form").on("submit", (event) => {
   event.preventDefault();
   const username = $("#registerUsername").val();
@@ -354,8 +372,9 @@ $(".form-submit").on("submit", async (e) => {
 $(".edit-form-submit").on("submit", async (event) => {
   event.preventDefault();
 
-  const card = $(".card").data();
+  const { card } = $(".edit-form-submit").data();
   console.log(card);
+  console.log($(".edit-form-submit").data());
 
   const postTitle = $("#edit-title").val();
   const postDescription = $("#edit-description").val();
@@ -369,9 +388,9 @@ $(".edit-form-submit").on("submit", async (event) => {
       title: postTitle,
       description: postDescription,
       price: postPrice,
-      author: postAuthor,
-      location: postLocation,
-      willDeliver: postwillDeliver,
+      // author: postAuthor,
+      // location: postLocation,
+      // willDeliver: postwillDeliver,
     },
   };
 
@@ -422,23 +441,16 @@ $("#posts").on("click", ".edit-icon", async (event) => {
   const listingElement = $(event.target).closest(".card").data("post");
   console.log(listingElement);
 
-  const titleContent = listingElement.title; // change below
-  const descriptionContent = listingElement.description;
-  const priceContent = listingElement.price;
-  const authorContent = listingElement.author.username;
-  const locationContent = listingElement.location;
+  const parentElement = $(event.target).closest("#posts");
+  console.log(parentElement);
 
-  const titleValue = document.getElementById("edit-title");
-  const descriptionValue = document.getElementById("edit-description");
-  const priceValue = document.getElementById("edit-price");
-  const authorValue = document.getElementById("edit-author");
-  const locationValue = document.getElementById("edit-location");
+  $(".edit-form-submit").data({ listingElement });
+  $("#edit-title").val(listingElement.title);
+  $("#edit-description").val(listingElement.description);
+  $("#edit-price").val(listingElement.price);
 
-  titleValue.value = titleContent;
-  descriptionValue.value = descriptionContent;
-  priceValue.value = priceContent;
-  authorValue.value = authorContent;
-  locationValue.value = locationContent;
+  const post = $(".edit-form-submit").data();
+  console.log(post);
 });
 
 // Deletes post if it belongs to user logged in
