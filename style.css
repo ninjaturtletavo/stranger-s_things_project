@@ -6,16 +6,14 @@
 .container {
   display: grid;
   height: 100vh;
-  grid-template-columns: 1fr 1fr 0.6fr 0.6fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-template-rows: 0.2fr 1fr 1fr 0.2fr;
-  grid-template-areas: "nav nav nav nav" "main main form form" "main main form form" "footer footer footer footer";
+  grid-template-areas: "nav nav nav nav" "main main main form" "main main main form" "footer footer footer footer";
   /* grid-gap: 0.2rem; */
-  border-style: solid;
-  border-color: #0c120c;
 }
 
 nav {
-  background: #c20114;
+  background: #467599;
   grid-area: nav;
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
@@ -28,8 +26,9 @@ nav {
 }
 
 main {
-  /* display: flex; */
-  background: #0c120c;
+  display: flex;
+  flex-wrap: wrap;
+  background: #9ed8db;
   text-align: center;
   grid-area: main;
 
@@ -39,66 +38,109 @@ main {
 }
 
 .posts-h3 {
-  color: #adafaf;
+  color: #d6d5d5;
 }
 
 .card-body {
   color: #0c120c;
-  background-color: #6d7275;
-  border-style: solid;
-  border-radius: 3%;
+  background-color: #e9fff9;
+  border: #d64045 solid 3px;
+  border-radius: 5%;
+  margin: 2px;
+  width: 300px;
+  height: 300px;
 }
 
 .card-text1 {
   color: #0c120c;
-
-  background-color: #adafaf;
+  background-color: #e9fff9;
 }
 
 #new-post {
-  background: #ecebf3;
+  visibility: hidden;
+  background: #d1d0d6;
   grid-area: form;
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
 }
 
-.mb-3 {
+.form-submit {
+  display: block;
+  max-width: auto;
+  min-height: 100%;
+  padding: 5px;
+  margin: auto;
+  border-radius: 5px;
+  border: solid 1px #d64045;
+  box-shadow: 1px 2px 5px rgba(0, 0, 010, 0.31);
+  background: #d64045;
+}
+
+.edit-form-submit {
+  display: none;
+}
+
+.mb-3,
+.mb-31 {
   margin-left: 15px;
   margin-top: 2px;
 }
 
-#blog-title {
-  margin-left: 9.4px;
+#post-title,
+#edit-title {
+  margin-left: 44.2px;
 }
 
-#blog-price {
+#post-price,
+#edit-price {
   margin-left: 41px;
 }
 
-#blog-author {
+#post-author,
+#edit-author {
   margin-left: 28.8px;
 }
 
-#blog-location {
+#post-location,
+#edit-location {
   margin-left: 17px;
 }
 
 #footer {
-  background: #c20114;
+  background: #467599;
   grid-area: footer;
   border-radius: var(--main-radius);
   padding-top: var(--main-padding);
 }
 
-#myBtn {
+#login {
   background-color: #ecebf3;
   color: #000000;
   padding: 5px;
   float: right;
 }
 
-#myBtn:hover {
+#openMessages,
+#viewMessages {
+  visibility: hidden;
+  background-color: #ecebf3;
+  color: #000000;
+  padding: 5px;
+  float: right;
+}
+
+#login:hover,
+#openMessages:hover,
+#viewMessages:hover {
   background-color: #c7d6d5;
+}
+
+#logout {
+  display: none;
+  background-color: #ecebf3;
+  color: #000000;
+  padding: 5px;
+  float: right;
 }
 
 /* The Modal (background) */
@@ -116,13 +158,13 @@ main {
 .modal-header,
 .modal-footer {
   margin: auto;
-  background-color: #0c120c;
+  background-color: #467599;
   text-align: center;
 }
 
 /* Modal Content/Box */
 .modal-content {
-  background-color: #c20114;
+  background-color: #e9fff9;
   color: #ecebf3;
   margin: 15% auto; /*15% from the top and centered*/
   width: 50%; /* Could be more or less, depending on screen size */
@@ -130,7 +172,9 @@ main {
 }
 
 /* The Close Button */
-.close {
+.close,
+.close-message,
+.close-view-message {
   color: #ecebf3;
   float: right;
   font-size: 28px;
@@ -138,10 +182,33 @@ main {
 }
 
 .close:hover,
-.close:focus {
-  color: #c20114;
+.close-message:hover,
+.close-view-message:hover .close:focus,
+.close-message:focus,
+.close-view-message:focus {
+  color: #e9fff9;
   text-decoration: none;
   cursor: pointer;
+}
+
+/*Messages Modal*/
+.modal-messages {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+}
+
+.modal-messages-content {
+  background-color: #e9fff9;
+  color: #ecebf3;
+  margin: 15% auto; /*15% from the top and centered*/
+  width: 50%; /* Could be more or less, depending on screen size */
+  justify-content: center;
 }
 
 .edit-icon {

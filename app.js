@@ -9,7 +9,6 @@ const fetchPosts = async () => {
     const response = await fetch(`${BASE_URL}/posts`);
     const { data } = await response.json();
     const { posts } = data;
-
     return posts;
   } catch (e) {
     console.error(e);
@@ -20,34 +19,33 @@ const fetchPosts = async () => {
 const fetchMe = async () => {
   const token = JSON.parse(localStorage.getItem("token"));
 
-  try {
-    const response = await fetch(`${BASE_URL}/users/me`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const result = await response.json();
-
-    return result.data; // If I remove .data, my edit and delete buttons disappear!
-  } catch (e) {
-    console.error(e);
+  if (token) {
+    try {
+      const response = await fetch(`${BASE_URL}/users/me`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await response.json();
+      return result.data; // If I remove .data, my edit and delete buttons disappear!
+    } catch (e) {
+      console.error(e);
+    }
   }
 };
 
 // Renders posts and user data
 const fetchAndRender = async () => {
   const posts = await fetchPosts();
-  const { data } = posts;
   const user = await fetchMe();
-  console.log(posts);
-  console.log(data);
-  renderPosts(posts.data, user);
+  renderPosts(posts, user);
 };
 
 // createPostHTML appends on #posts on html page
 const renderPosts = (posts, me) => {
+  $("#posts").empty();
   posts.forEach((post) => {
     const postElement = createPostHTML(post, me);
     $("#posts").append(postElement);
@@ -68,7 +66,6 @@ const createPost = async (requestBody) => {
       body: JSON.stringify(requestBody),
     });
     const result = await response.json();
-
     return result;
   } catch (e) {
     console.error(e);
@@ -89,7 +86,6 @@ const editPost = async (requestBody, postId) => {
       body: JSON.stringify(requestBody),
     });
     const result = await response.json();
-
     return result;
   } catch (e) {
     console.error(e);
@@ -114,7 +110,7 @@ const deletePost = async (postId) => {
 };
 
 //
-const messageSend = async (messages, postId) => {
+const createMessage = async (messages, postId) => {
   const {
     post: { _id },
   } = postId;
@@ -153,15 +149,20 @@ const renderMessages = ({ messages } = post) => {
 
 // Creates a card with keys from post
 const createPostHTML = (post, me) => {
-  const { title, description, price, author, location } = post;
+  const { title, description, price, author, location, willDeliver } = post;
 
   return $(`<div class="card">
   <div class="card-body">
     ${title ? `<h3 class="card-title">${title}</h3>` : ""}
-    ${description ? `<p>${description}</p>` : ""}
-    ${price ? `<p>${price}</p>` : ""}
-    ${author.username ? `<p>${author.username}</p>` : ""}
-    ${location ? `<p>${location}</p>` : ""}
+    ${description ? `<p class="card-description">${description}</p>` : ""}
+    ${price ? `<p class="card-price">${price}</p>` : ""}
+    ${author.username ? `<p class="card-author">${author.username}</p>` : ""}
+    ${location ? `<p class="card-location">${location}</p>` : ""}
+    ${
+      willDeliver === true
+        ? `<p class="card-location">YES</p>`
+        : `<p class="card-location">NO</p>`
+    }
     ${
       me._id === author._id
         ? `
@@ -218,8 +219,8 @@ const registerUser = async (usernameValue, passwordValue) => {
     } = await response.json();
     localStorage.setItem("token", JSON.stringify(token));
     hideRegistration();
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
   }
 };
 
@@ -243,9 +244,8 @@ const loginUser = async (usernameValue, passwordValue) => {
     const {
       data: { token },
     } = await response.json();
-    console.log(token);
     localStorage.setItem("token", JSON.stringify(token));
-    fetchMe();
+    // $('loggedInUser').html(usernameValue) work on it for iusername
     hideLogin();
     hideRegistration();
     showLogout();
@@ -260,8 +260,10 @@ const hideRegistration = () => {
 
   if (token) {
     $(".register").css("display", "none");
-  } else {
-    console.log("Nothing to hide!");
+    $("#new-post").css("visibility", "visible");
+    $("#openMessages").css("visibility", "visible");
+    $("#viewMessages").css("visibility", "visible");
+    fetchAndRender();
   }
 };
 
@@ -282,6 +284,9 @@ const userLogout = () => {
 
   $("#login").show(); // will show button
   $("#logout").css("display", "none");
+  $("#new-post").css("visibility", "hidden");
+  $("#openMessages").css("visibility", "hidden");
+  $("#viewMessages").css("visibility", "hidden");
 };
 
 // If a user is logged in, shows logout button
@@ -298,7 +303,6 @@ $(".register form").on("submit", (event) => {
   event.preventDefault();
   const username = $("#registerUsername").val();
   const password = $("#registerPassword").val();
-  console.log(username, password);
   registerUser(username, password);
 });
 
@@ -306,12 +310,10 @@ $(".login form").on("submit", (event) => {
   event.preventDefault();
   const username = $("#loginUsername").val();
   const password = $("#loginPassword").val();
-  console.log(username, password, "I am logged in!");
   loginUser(username, password);
 });
 
 $("#logout").on("click", () => {
-  console.log("Logged out.");
   userLogout();
 });
 
@@ -319,25 +321,63 @@ $("#logout").on("click", () => {
 $(".form-submit").on("submit", async (e) => {
   e.preventDefault();
 
-  const blogTitle = $("#blog-title").val();
-  const blogDescription = $("#blog-description").val();
-  const blogPrice = $("#blog-price").val();
-  const blogAuthor = $("#blog-author").val();
-  const blogLocation = $("#blog-location").val();
+  const postTitle = $("#post-title").val();
+  const postDescription = $("#post-description").val();
+  const postPrice = $("#post-price").val();
+  const postAuthor = $("#post-author").val();
+  const postLocation = $("#post-location").val();
+  const postwillDeliver = $("#post-willDeliver").val();
 
   const requestBody = {
     post: {
-      title: blogTitle,
-      description: blogDescription,
-      price: blogPrice,
-      author: blogAuthor,
-      location: blogLocation,
+      title: postTitle,
+      description: postDescription,
+      price: postPrice,
+      author: postAuthor,
+      location: postLocation,
+      willDeliver: postwillDeliver,
     },
   };
 
   try {
     console.log(requestBody);
     await createPost(requestBody);
+    fetchAndRender();
+
+    // clear form after submit
+    $("form").trigger("reset");
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+$(".edit-form-submit").on("submit", async (event) => {
+  event.preventDefault();
+
+  const card = $(".card").data();
+  console.log(card);
+
+  const postTitle = $("#edit-title").val();
+  const postDescription = $("#edit-description").val();
+  const postPrice = $("#edit-price").val();
+  const postAuthor = $("#edit-author").val();
+  const postLocation = $("#edit-location").val();
+  const postwillDeliver = $("#edit-willDeliver").val();
+
+  const requestBody = {
+    post: {
+      title: postTitle,
+      description: postDescription,
+      price: postPrice,
+      author: postAuthor,
+      location: postLocation,
+      willDeliver: postwillDeliver,
+    },
+  };
+
+  try {
+    console.log(requestBody);
+    const result = await editPost(requestBody, card.post._id);
     fetchAndRender();
 
     // clear form after submit
@@ -371,35 +411,37 @@ $(".message-form").on("submit", async (event) => {
   }
 });
 
+// Edits post by clicking edit icon
 $("#posts").on("click", ".edit-icon", async (event) => {
   event.preventDefault();
   console.log("Let's Edit!!!!!");
 
-  const listingElement = $(event.target).closest(".card");
-  let titleContent = $("#blog-title").val();
-  console.log(titleContent);
+  $(".form-submit").css("display", "none");
+  $(".edit-form-submit").css("display", "block");
 
-  // const { card } = $("#posts").data();
+  const listingElement = $(event.target).closest(".card").data("post");
+  console.log(listingElement);
 
-  // const postData = {
-  //   post: {
-  //     title: $("#blog-title").val(),
-  //     description: $("#blog-description").val(),
-  //     price: $("#blog-price").val(),
-  //   },
-  // };
+  const titleContent = listingElement.title; // change below
+  const descriptionContent = listingElement.description;
+  const priceContent = listingElement.price;
+  const authorContent = listingElement.author.username;
+  const locationContent = listingElement.location;
 
-  // try {
-  //   const result = await editPost(postData, card._id);
-  //   console.log("Result is: ", result);
-  //   fetchAndRender();
-  //   $("#posts").data({ card: null });
-  //   $("#posts").trigger("reset");
-  // } catch (e) {
-  //   console.error(e);
-  // }
+  const titleValue = document.getElementById("edit-title");
+  const descriptionValue = document.getElementById("edit-description");
+  const priceValue = document.getElementById("edit-price");
+  const authorValue = document.getElementById("edit-author");
+  const locationValue = document.getElementById("edit-location");
+
+  titleValue.value = titleContent;
+  descriptionValue.value = descriptionContent;
+  priceValue.value = priceContent;
+  authorValue.value = authorContent;
+  locationValue.value = locationContent;
 });
 
+// Deletes post if it belongs to user logged in
 $("#posts").on("click", ".delete-icon", async (event) => {
   event.preventDefault();
   console.log("I am now deleting the post!");
@@ -414,7 +456,7 @@ $("#posts").on("click", ".delete-icon", async (event) => {
   console.log(_id);
   console.log("clicked");
 
-  deletePost(_id);
+  await deletePost(_id);
   fetchAndRender();
 });
 
@@ -450,7 +492,7 @@ const modalMessages = document.getElementById("modalMessages");
 // Get the button that opens the modal
 const messageBtn = document.getElementById("openMessages");
 //Get the span element that closes the modal
-const closeMessageBtn = document.getElementsByClassName("close-messages")[0];
+const closeMessageBtn = document.getElementsByClassName("close-message")[0];
 
 messageBtn.onclick = () => {
   modalMessages.style.display = "block";
@@ -463,6 +505,29 @@ closeMessageBtn.onclick = function () {
 window.onclick = function (event) {
   if (event.target == modalMessages) {
     modalMessages.style.display = "none";
+  }
+};
+
+// Get modal for modalViewMessages
+const modalViewMessages = document.getElementById("modalViewMessages");
+// Get the button that opens the modal
+const messageViewBtn = document.getElementById("viewMessages");
+//Get the span element that closes the modal
+const closeViewMsgBtn = document.getElementsByClassName(
+  "close-view-message"
+)[0];
+
+messageViewBtn.onclick = () => {
+  modalViewMessages.style.display = "block";
+};
+
+closeViewMsgBtn.onclick = function () {
+  modalViewMessages.style.display = "none";
+};
+
+window.onclick = function (event) {
+  if (event.target == modalViewMessages) {
+    modalViewMessages.style.display = "none";
   }
 };
 //------------------------------------------------------------------------------------------------

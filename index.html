@@ -25,7 +25,8 @@
       <nav id="title">
         <h1 class="title-h1">Stranger's Things</h1>
         <!-- Trigger/Open The Modal -->
-        <button id="myBtn">Please login or register</button>
+        <button id="login">Please login or register</button>
+        <button id="logout">Logout</button>
         <!-- The Modal -->
         <div id="myModal" class="modal">
           <!-- Modal content -->
@@ -83,16 +84,70 @@
             <footer class="modal-footer">Modal Footer</footer>
           </div>
         </div>
+        <div id="send-messages">
+          <button id="openMessages">Send Message</button>
+          <div id="modalMessages" class="modal-messages">
+            <div class="modal-messages-content">
+              <header class="modal-header">
+                <span class="close-message">&times;</span>
+                <h3>Messages</h3>
+              </header>
+              <form class="message-form">
+                <div class="message-card">
+                  <div class="message-body">
+                    <h3 class="message-title"></h3>
+                    <p class="message-description"></p>
+                  </div>
+                </div>
+                <div class="message-body">
+                  <label for="message-body" class="message-label"
+                    >Your Message to:</label
+                  >
+                  <textarea
+                    placeholder="Type message here"
+                    class="form-control"
+                    id="message-body"
+                    rows="3"
+                  ></textarea>
+                </div>
+                <div id="message-buttons">
+                  <button
+                    id="send-message-btn"
+                    type="submit"
+                    class="btn btn-primary"
+                  >
+                    Send
+                  </button>
+                  <button id="cancel-message-btn" class="btn btn-primary">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+              <footer class="modal-footer">Footer</footer>
+            </div>
+          </div>
+        </div>
+        <div id="view-messages">
+          <button id="viewMessages">View Messages</button>
+          <div id="modalViewMessages" class="modal-messages">
+            <div class="modal-messages-content">
+              <header class="modal-header">
+                <span class="close-view-message">&times;</span>
+                <h3>Messages</h3>
+              </header>
+              <footer class="modal-footer">Footer</footer>
+            </div>
+          </div>
+        </div>
       </nav>
-      <main id="posts"><h3 class="posts-h3">Active Posts</h3></main>
+      <main id="posts"><h3 class="posts-h3">Active Listings</h3></main>
       <div id="new-post">
-        New Post
         <form class="form-submit">
           <div class="new-post-1">
             <div class="mb-3">
-              <label for="blog-title" class="form-title">Blog Title</label>
+              <label for="post-title" class="form-title">Title</label>
               <input
-                id="blog-title"
+                id="post-title"
                 class="form-control"
                 type="text"
                 required
@@ -100,14 +155,14 @@
             </div>
 
             <div class="mb-3">
-              <label for="blog-price" class="form-label">Price</label>
-              <input id="blog-price" class="form-control" type="text" />
+              <label for="post-price" class="form-label">Price</label>
+              <input id="post-price" class="form-control" type="text" />
             </div>
 
             <div class="mb-3">
-              <label for="blog-author" class="form-label">Author</label>
+              <label for="post-author" class="form-label">Author</label>
               <input
-                id="blog-author"
+                id="post-author"
                 class="form-control"
                 type="text"
                 required
@@ -115,28 +170,107 @@
             </div>
 
             <div class="mb-3">
-              <label for="blog-location" class="form-label">Location</label>
+              <label for="post-location" class="form-label">Location</label>
               <input
-                id="blog-location"
+                id="post-location"
                 class="form-control"
                 type="text"
                 required
               />
             </div>
+
+            <div class="mb-3">
+              <label for="post-willDEeliver" class="form-label"
+                >Will Deliver</label
+              >
+              <input
+                id="post-willDeliver"
+                class="form-control"
+                type="text"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="post-description" class="form-label"
+                >Description</label
+              >
+              <textarea
+                id="post-description"
+                class="form-control"
+                rows="4"
+                cols="22"
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
           </div>
+        </form>
+        <form class="edit-form-submit">
+          <div class="new-post-1">
+            <div class="mb-31">
+              <label for="edit-title" class="edit-title">Title</label>
+              <input
+                id="edit-title"
+                class="edit-control"
+                type="text"
+                required
+              />
+            </div>
 
-          <div class="mb-3">
-            <label for="blog-description" class="form-label">Description</label>
-            <textarea
-              id="blog-description"
-              class="form-control"
-              rows="4"
-              cols="22"
-              required
-            ></textarea>
+            <div class="mb-31">
+              <label for="edit-price" class="edit-label">Price</label>
+              <input id="edit-price" class="edit-control" type="text" />
+            </div>
+
+            <div class="mb-31">
+              <label for="edit-author" class="edit-label">Author</label>
+              <input
+                id="edit-author"
+                class="edit-control"
+                type="text"
+                required
+              />
+            </div>
+
+            <div class="mb-31">
+              <label for="edit-location" class="edit-label">Location</label>
+              <input
+                id="edit-location"
+                class="edit-control"
+                type="text"
+                required
+              />
+            </div>
+
+            <div class="mb-31">
+              <label for="edit-willDEeliver" class="edit-label"
+                >Will Deliver</label
+              >
+              <input
+                id="edit-willDeliver"
+                class="edit-control"
+                type="text"
+                required
+              />
+            </div>
+
+            <div class="mb-31">
+              <label for="edit-description" class="edit-label"
+                >Description</label
+              >
+              <textarea
+                id="edit-description"
+                class="edit-control"
+                rows="4"
+                cols="22"
+                required
+              ></textarea>
+            </div>
+
+            <button type="edit" class="btn btn-primary">Edit</button>
           </div>
-
-          <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
       <footer id="footer">Footer</footer>
